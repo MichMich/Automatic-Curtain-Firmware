@@ -5,6 +5,7 @@ Feedback::Feedback(uint8_t ledPin, uint8_t speakerPin) {
 	pinMode(ledPin, OUTPUT);
 	pinMode(speakerPin, OUTPUT);
 
+
 	_ledPin = ledPin;
 	_speakerPin = speakerPin;
 }

@@ -1,7 +1,3 @@
-//PJON
-#define PJON_PIN A0
-#define PJON_NETWORK_ID 1
-
 //PIN Configuration
 #define LED 3
 #define SOUND 13
@@ -22,7 +18,7 @@
 #define BUTTON_OPEN A5
 
 //Movement Resolution
-#define RESOLUTION 255
+#define RESOLUTION 1024
 
 //Direction Configuration
 #define FORWARD true
@@ -30,7 +26,7 @@
 
 //Motorspeed Configuration
 #define STEPSIZE 4
-#define MAXSPEED 2500
+#define MAXSPEED 2250
 #define MINSPEED 25
 #define DEFAULTSPEED 500
 #define ACCELDECELPORTION 3
@@ -41,3 +37,13 @@
 
 //Click speeds
 #define LONGCLICKTIME 750
+
+//Bridge Config
+#define SERIAL_SPEED 115200
+#define COMMAND_TARGET "T"
+#define COMMAND_STATE "S"
+#define COMMAND_PAIR_TARGET "P"
+#define COMMAND_ALL_TARGET "A"
+#define COMMAND_RESET "RESET"
+#define COMMAND_TOTAL_STEPS "STEPS"
+#define BROADCAST_INTERVAL 1000

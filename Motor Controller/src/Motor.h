@@ -15,7 +15,11 @@ class Motor
 		void setStepSize(int stepSize);
 		void setSpeed(int speed);
 		void setTargetPosition(int targetPosition);
+		int getTargetPosition();
+		int getCurrentPosition();
+		long getTotalSteps();
 		bool isRunning();
+		bool isManualControlled();
 
   	private:
 		volatile int _tick;

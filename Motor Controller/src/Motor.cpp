@@ -1,6 +1,6 @@
-#include "Motor.h"
-#include "config.h"
 #include <TimerOne.h>
+#include "Motor.h"
+#include "Config.h"
 
 /**
  * Constructor
@@ -27,7 +27,7 @@ Motor::Motor() {
 	_calibrating = false;
 	_currentStep = 0;
 	_totalSteps = 0;
-	_targetStep = 0;
+	_targetStep = -1;
 
 	_ticksPerSecond = 1000L / INTERRUPT_INTERVAL * 100;
 
@@ -64,19 +64,23 @@ void Motor::run(Direction direction) {
 		setSpeed(DEFAULTSPEED);
 	}
 
-	_manualMove = true;
+
 
 	switch (direction) {
 		case Forward:
 			_run = true;
+			_manualMove = true;
 			_direction = FORWARD;
 		break;
 		case Backward:
 			_run = true;
+			_manualMove = true;
 			_direction = BACKWARD;
 		break;
 		case Off:
 			_run = false;
+			_manualMove = false;
+			_targetStep = _currentStep;
 		break;
 
 	}
@@ -95,15 +99,20 @@ void Motor::stop() {
  * Starts the calibration process.
  */
 void Motor::calibrate() {
+	// _totalSteps = 1000;
+	// _manualMove = false;
+	// return;
+
+
 	_calibrating = true;
 	run(Backward);
-	Serial.println("Start calibration ... ");
+	//Serial.println("Start calibration ... ");
 	while (_calibrating) {
 		// Wait while calibrating.
 	}
-	Serial.print("Calibration done! ");
-	Serial.print(_totalSteps);
-	Serial.println(" steps.");
+	//Serial.print("Calibration done! ");
+	//Serial.print(_totalSteps);
+	//Serial.println(" steps.");
 }
 
 /**
@@ -170,8 +179,13 @@ void Motor::setSpeed(int speed) {
  */
 void Motor::setTargetPosition(int targetPosition) {
 	if (targetPosition < 0) targetPosition = 0;
-	if (targetPosition > RESOLUTION - 1) targetPosition = RESOLUTION - 1;
-	_targetStep = map(targetPosition, 0, RESOLUTION - 1, 0, _totalSteps);
+	if (targetPosition > RESOLUTION) targetPosition = RESOLUTION;
+	long newTargetStep = map(targetPosition, 0, RESOLUTION, 0, _totalSteps);
+	if (newTargetStep == _targetStep) {
+		// new target is the same. Do nothing.
+		return;
+	}
+	_targetStep = newTargetStep;
 	_startStep = _currentStep;
 
 	bool oldDirection = _direction;
@@ -190,20 +204,47 @@ void Motor::setTargetPosition(int targetPosition) {
 
 	_manualMove = false;
 
-	Serial.print("Total steps: ");
-	Serial.print(_totalSteps);
-	Serial.print(" - Current step: ");
-	Serial.print(_currentStep);
-	Serial.print(" - Target step: ");
-	Serial.println(_targetStep);
+	//Serial.print("Total steps: ");
+	//Serial.print(_totalSteps);
+	//Serial.print(" - Current step: ");
+	//Serial.print(_currentStep);
+	//Serial.print(" - Target step: ");
+	//Serial.println(_targetStep);
 }
 
+/**
+ * Retreive the current target position.
+ * @return The target position.
+ */
+int Motor::getTargetPosition() {
+	return map(_targetStep, 0, _totalSteps, 0, RESOLUTION);
+}
+
+/**
+ * Get the current position.
+ * @return The current position.
+ */
+int Motor::getCurrentPosition() {
+	return map(_currentStep, 0, _totalSteps, 0, RESOLUTION);
+}
+
+long Motor::getTotalSteps() {
+	return _totalSteps;
+}
 /**
  * Returns if the motor is currently running.
  * @return If motor is currently running.
  */
 bool Motor::isRunning() {
 	return _run;
+}
+
+/**
+ * Returns if the motor is currently manually controlled.
+ * @return Is currently manually controlled.
+ */
+bool Motor::isManualControlled() {
+	return _manualMove;
 }
 
 // Private Methods
